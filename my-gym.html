@@ -346,7 +346,8 @@ var PAIN_TXT = {};
 PAIN.forEach(function(p){ PAIN_TXT[p[0]] = p[1].toLowerCase(); });
 
 function pad(n){ return String(n).padStart(2, "0"); }
-var TODAY = (function(){ var d = new Date(); return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); })();
+function todayStr(){ var d = new Date(); return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+var TODAY = todayStr();
 function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
 function fmt(n){ if (n == null || n === "") return ""; return String(Math.round(n * 100) / 100).replace(".", ","); }
 function parseNum(s){ s = String(s == null ? "" : s).trim().replace(",", "."); if (s === "") return null; var n = Number(s); return isFinite(n) ? n : null; }
@@ -1046,37 +1047,60 @@ view.addEventListener("click", function(e){
   }
 });
 document.addEventListener("visibilitychange", function(){
-  if (document.visibilityState === "hidden") flushAll();
-  else { if (wantWL) keepAwake(); if (tInt) tick(); }
+  if (document.visibilityState === "hidden") { flushAll(); return; }
+  if (wantWL) keepAwake(); if (tInt) tick();
+  if (todayStr() !== TODAY) { flushAll(); reloadWhenIdle(); return; }   // nowy dzień: strona zaczyna od nowa
+  if (db) pull(false);                                                   // dociągnij zmiany z innego urządzenia
 });
+function reloadWhenIdle(){
+  var busy = Object.keys(SAVE).some(function(t){ return SAVE[t].saving || SAVE[t].timer; });
+  if (busy) setTimeout(reloadWhenIdle, 300); else location.reload();
+}
 
 // ---- Start ----
 function use(name){
   try { return Promise.resolve(window.claude && window.claude.use ? window.claude.use(name) : null).catch(function(){ return null; }); }
   catch (e) { return Promise.resolve(null); }
 }
+// Odczyt dziennika z bazy i scalenie z tym, co jest na ekranie. Nowszy dokument wygrywa.
+// Wołane przy starcie (force) i przy każdym powrocie do karty, żeby telefon widział zmiany z komputera.
+var pulling = false, lastPull = 0;
+function pull(force){
+  if (!db || pulling) return;
+  if (!force && Date.now() - lastPull < 3000) return;
+  pulling = true;
+  db.collection("sesje").orderBy("data", "desc").limit(400).get().then(function(snap){
+    return snap.docs.map(function(x){ return x.data(); }).filter(Boolean).map(clone);
+  }, function(){ return force ? [] : null; }).then(function(docs){
+    pulling = false; lastPull = Date.now();
+    if (!docs) return;
+    var sig = function(h){ return h.map(function(x){ return x.id + "@" + (x.updatedAt || ""); }).sort().join("|"); };
+    var dirty = force || sig(docs) !== sig(history);
+    history = docs;
+    Object.keys(PLAN).forEach(function(t){ LAST[t] = lastFrom(history, t); });
+    activePlans().forEach(function(t){
+      var q = Q(t);
+      if (q.saving || q.timer) return;   // lokalne zmiany są w drodze do bazy; flush je wyśle
+      var remote = history.find(function(x){ return x.id === S[t].id; });
+      if (remote && (!S[t].updatedAt || (remote.updatedAt || "") > S[t].updatedAt)) {
+        S[t] = normalize(remote); TOUCHED[t] = true; LS.set(KEY(S[t].id), S[t]); dirty = true;
+      } else if (!TOUCHED[t]) {
+        S[t] = freshSession(t);
+      } else if (S[t].updatedAt && (!remote || (remote.updatedAt || "") < S[t].updatedAt)) {
+        clearTimeout(q.timer); q.state = "pending"; q.timer = setTimeout(function(){ flush(t); }, 300);
+      }
+    });
+    if (!dirty) { setStatus(); return; }
+    var a = document.activeElement, fid = a && a.id, y = window.scrollY;
+    renderView(); window.scrollTo(0, y);
+    if (fid) { var el = document.getElementById(fid); if (el && el.focus) el.focus(); }
+  });
+}
 function connect(){
   use("db").then(function(d){
     if (!d) { dbState = "local"; setStatus(); if (currentTab === "log") renderView(); return; }
     db = d; dbState = "ok";
-    return db.collection("sesje").orderBy("data", "desc").limit(400).get().then(function(snap){
-      history = snap.docs.map(function(x){ return x.data(); }).filter(Boolean).map(clone);
-    }, function(){ history = []; }).then(function(){
-      Object.keys(PLAN).forEach(function(t){ LAST[t] = lastFrom(history, t); });
-      activePlans().forEach(function(t){
-        var remote = history.find(function(x){ return x.id === S[t].id; });
-        if (remote && (!S[t].updatedAt || (remote.updatedAt || "") > S[t].updatedAt)) {
-          S[t] = normalize(remote); TOUCHED[t] = true; LS.set(KEY(S[t].id), S[t]);
-        } else if (!TOUCHED[t]) {
-          S[t] = freshSession(t);
-        } else if (S[t].updatedAt && (!remote || (remote.updatedAt || "") < S[t].updatedAt)) {
-          var q = Q(t); q.state = "pending"; q.timer = setTimeout(function(){ flush(t); }, 300);
-        }
-      });
-      var a = document.activeElement, fid = a && a.id, y = window.scrollY;
-      renderView(); window.scrollTo(0, y);
-      if (fid) { var el = document.getElementById(fid); if (el && el.focus) el.focus(); }
-    });
+    pull(true);
   });
   use("sample").then(function(fn){
     sample = fn || null; sampleOn = !!sample;
