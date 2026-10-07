@@ -1097,54 +1097,37 @@ function reloadWhenIdle(){
   if (busy) setTimeout(reloadWhenIdle, 300); else location.reload();
 }
 
-// ==== ADAPTER START: Claude ====
-// Jedyny kod zależny od platformy. Wszystko powyżej jest wspólne (patrz AGENTS.md). build.mjs podmienia ten blok
-// na sites/adapter.js, żeby zbudować stronę dla ChatGPT Sites. Kontrakt:
-//   ADAPTER.assistantName: { nom, gen, dat }  nazwa asystenta w mianowniku, dopełniaczu i celowniku (do napisów)
-//   ADAPTER.localNote: zdanie pokazywane, gdy magazynu nie ma i zapis idzie tylko do localStorage
-//   ADAPTER.connect(): Promise<store|null>; null = brak magazynu
-//     store.loadPlan(): Promise<planDoc|null>; null = plan z tego pliku (PLAN, TABS, SOON, PROFIL)
-//     store.listSessions(limit): Promise<session[]>; dokumenty "sesje" od najnowszego
-//     store.saveSession(session): Promise<void>; odrzuca przy błędzie, wtedy strona pokazuje „nie zapisano”
-//     store.loadTargets(): Promise<{ [trening]: target }>; cele na następny trening
-//   ADAPTER.assistant(): Promise<assistant|null>; null = sekcja „Zapytaj” ukryta
-//     assistant.json(prompt, { signal }): Promise<object>
-//     assistant.text(prompt, { signal, onText }): Promise<{ text, truncated }>
-function use(name){
-  try { return Promise.resolve(window.claude && window.claude.use ? window.claude.use(name) : null).catch(function(){ return null; }); }
-  catch (e) { return Promise.resolve(null); }
-}
+// ==== ADAPTER START: ChatGPT Sites ====
+// Adapter przeglądarkowy dla wariantu ChatGPT Sites. build.mjs wkleja ten blok do my-gym.html w miejsce adaptera Claude
+// i zapisuje wynik jako sites/public/index.html oraz sites/src/page.ts. Kontrakt adaptera opisuje AGENTS.md.
+// Strona rozmawia z backendem (sites/src/index.ts) pod tym samym originem: GET /api/plan, GET /api/workouts,
+// PUT /api/workouts/{id}, GET /api/targets. Tożsamość użytkownika ustala platforma Sites, nie strona.
 var ADAPTER = {
-  assistantName: { nom: "Claude", gen: "Claude’a", dat: "Claude’owi" },
-  localNote: "Otwórz stronę zalogowany w aplikacji Claude albo na claude.ai, żeby wyniki trafiały do wspólnego dziennika.",
+  assistantName: { nom: "ChatGPT", gen: "ChatGPT", dat: "ChatGPT" },
+  localNote: "Strona nie połączyła się ze swoją bazą. Odśwież ją; jeśli to się powtarza, sprawdź, czy jesteś zalogowany w ChatGPT.",
   connect: function(){
-    return use("db").then(function(d){
-      if (!d) return null;
-      var retry = function(fn){
-        return fn().catch(function(e){
-          if (e && e.code === "unavailable") return new Promise(function(r){ setTimeout(r, 700 + Math.random() * 700); }).then(fn);
-          throw e;
+    var api = function(method, path, body){
+      var opts = { method: method, credentials: "same-origin", cache: "no-store", headers: { "Accept": "application/json", "X-Requested-With": "my-gym" } };
+      if (body !== undefined) { opts.headers["Content-Type"] = "application/json"; opts.body = JSON.stringify(body); }
+      return fetch(path, opts).then(function(res){
+        return res.text().then(function(txt){
+          var j = null; try { j = txt ? JSON.parse(txt) : null; } catch (e) {}
+          if (!res.ok) { var err = new Error((j && j.error) || ("HTTP " + res.status)); err.status = res.status; throw err; }
+          return j;
         });
-      };
-      var docs = function(snap){ return snap.docs.map(function(x){ return x.data(); }).filter(Boolean); };
+      });
+    };
+    return api("GET", "/api/plan").then(function(j){
+      var planDoc = j && j.plan ? j.plan : null;
       return {
-        loadPlan: function(){ return Promise.resolve(null); },   // w wariancie Claude plan jest w tym pliku
-        listSessions: function(limit){ return d.collection("sesje").orderBy("data", "desc").limit(limit).get().then(docs); },
-        saveSession: function(s){ return retry(function(){ return d.doc("sesje/" + s.id).set(s); }); },
-        loadTargets: function(){
-          return d.collection("cele").get().then(docs).then(function(list){
-            var out = {}; list.forEach(function(x){ if (x && x.trening) out[x.trening] = x; }); return out;
-          }, function(){ return {}; });
-        }
+        loadPlan: function(){ return Promise.resolve(planDoc); },
+        listSessions: function(limit){ return api("GET", "/api/workouts?limit=" + encodeURIComponent(limit)).then(function(j){ return (j && j.workouts) || []; }); },
+        saveSession: function(s){ return api("PUT", "/api/workouts/" + encodeURIComponent(s.id), s).then(function(){}); },
+        loadTargets: function(){ return api("GET", "/api/targets").then(function(j){ return (j && j.targets) || {}; }); }
       };
-    });
+    }, function(){ return null; });   // 401 albo brak backendu: strona działa bez magazynu i mówi o tym w pasku statusu
   },
-  assistant: function(){
-    return use("sample").then(function(fn){
-      if (!fn) return null;
-      return { json: function(p, o){ return fn.json(p, o); }, text: function(p, o){ return fn(p, o); } };
-    });
-  }
+  assistant: function(){ return Promise.resolve(null); }   // bez modelu w stronie; rozmowa o planie idzie przez narzędzia MCP w ChatGPT
 };
 // ==== ADAPTER END ====
 

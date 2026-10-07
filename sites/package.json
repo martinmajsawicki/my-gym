@@ -1,0 +1,15 @@
+{
+  "name": "my-gym-sites",
+  "private": true,
+  "type": "module",
+  "description": "My gym on ChatGPT Sites: Cloudflare Worker + D1 backend and MCP tools. The page itself is generated from ../my-gym.html by ../build.mjs.",
+  "scripts": {
+    "build": "node ../build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test 'test/**/*.test.mjs'",
+    "check": "node ../build.mjs --check && tsc --noEmit && node --test 'test/**/*.test.mjs'"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0"
+  }
+}
