@@ -1,33 +1,33 @@
-# Instrukcja dla Claude'a: Moja siłownia
+# Instructions for Claude: My gym
 
-Ten folder zawiera jedną stronę treningową (`moja-silownia.html`) należącą do użytkownika, który ją pobrał. Twoje zadania: opublikować ją jako prywatną stronę użytkownika, wpisać jego plan, czytać jego wyniki i pomagać w planowaniu. Zanim cokolwiek zmienisz, przeczytaj komentarz na początku pliku HTML.
+This folder holds one workout page (`my-gym.html`) that belongs to the person who downloaded it. Your jobs: publish it as that person's private page, write in their plan, read their results and help them plan. Before changing anything, read the comment at the top of the HTML file. The user may speak Polish or English; the interface of the page is in Polish.
 
-## Publikacja
+## Publishing
 
-- Publikuj narzędziem Artifact z `capabilities: {"db": {}, "sample": {}}`. Bez `db` nie zapiszą się wyniki, bez `sample` nie zadziała przycisk „Zapytaj Claude'a”.
-- Przy każdej kolejnej publikacji używaj tego samego pliku i tego samego adresu, żeby użytkownik nie musiał zmieniać linku w telefonie.
-- Po pierwszej publikacji podaj użytkownikowi link i powiedz, że ma go otworzyć w telefonie zalogowany na swoje konto Claude.
+- Publish with the Artifact tool and `capabilities: {"db": {}, "sample": {}}`. Without `db` results will not be saved; without `sample` the "Zapytaj Claude'a" (Ask Claude) button will not work.
+- On every later publish use the same file and the same URL, so the user never has to change the link on their phone.
+- After the first publish give the user the link and tell them to open it on their phone, signed in to their own Claude account.
 
-## Plan treningów
+## The plan
 
-- Plan jest w obiekcie `PLAN` w sekcji między komentarzami `CZYSTE START` i `CZYSTE KONIEC`. Jeden trening to jeden obiekt (`t1`, `t2`, `t3`...). Zakładki buduje tablica `TABS`; trening bez wpisu w `PLAN` pokazuje zaślepkę z `SOON`.
-- Grupa w `supersets` z jednym ćwiczeniem to zwykłe serie. Grupa z dwoma ćwiczeniami to superseria: najpierw pierwsze, zaraz potem drugie, przerwa dopiero po parze. Ta sama konstrukcja obsługuje dobicie (seria robocza i od razu lżejsza seria).
-- Pola ćwiczenia: `id` (unikalne w treningu, np. `A1`), `name`, `short`, `sets`, `kg` (ciężar wyjściowy; `null`, gdy nieznany; `0` dla ćwiczeń bez obciążenia), `lo` i `hi` (zakres powtórzeń), `step` (krok progresji w jednostce; `null`, gdy krokiem jest „+1 płytka”), `stepLabel`, `unit` (`"szt."` dla maszyn z odciążeniem, wtedy `assist: true` i `step` ujemny, bo mniej sztabek znaczy trudniej), `perHand` (ciężar na rękę), `perSide` (powtórzenia na stronę), `bar` (rysuje talerze na gryf 20 kg), `cue` (jedno zdanie wskazówki).
-- Pola grupy: `id` (litera), `station`, `sub` (opis pod nagłówkiem), `rest` (przerwa w sekundach po grupie).
-- Przy wpisywaniu planu z dyktowania: pytaj o to, czego użytkownik nie podał (ciężary, przerwy, które ćwiczenia idą w parach). Nie wymyślaj ciężarów. Zakresy powtórzeń i kroki progresji możesz zaproponować, ale powiedz, że to Twoja propozycja.
-- Stały `PROFIL` uzupełnij z rozmowy: staż, cel, ile dni w tygodniu, ograniczenia zdrowotne, skąd pochodzi plan. Trafia do każdego pytania zadawanego w appce.
-- Rozgrzewkę i schłodzenie dobierz do partii. Trzymaj je krótkie.
-- Stary plan nie musi znikać: dodaj mu `archived: true`, a zostanie widoczny w Dzienniku i na wykresach, bez zakładki.
+- The plan lives in the `PLAN` object, between the comments `CZYSTE START` and `CZYSTE KONIEC`. One workout is one object (`t1`, `t2`, `t3`...). The tabs are built from the `TABS` array; a workout missing from `PLAN` shows a placeholder from `SOON`.
+- A group in `supersets` with one exercise is plain straight sets. A group with two exercises is a superset: the first, then straight away the second, and the rest only after the pair. The same construct handles a drop set (working set, then immediately a lighter set).
+- Exercise fields: `id` (unique within the workout, e.g. `A1`), `name`, `short`, `sets`, `kg` (starting weight; `null` when unknown; `0` for bodyweight), `lo` and `hi` (rep range), `step` (progression step in the exercise's unit; `null` when the step is "one plate on the stack"), `stepLabel`, `unit` (`"szt."` for assisted machines, then `assist: true` and a negative `step`, because fewer assistance plates means harder), `perHand` (weight per hand), `perSide` (reps per side), `bar` (draws plates for a 20 kg bar), `cue` (one sentence of advice).
+- Group fields: `id` (a letter), `station`, `sub` (line under the heading), `rest` (rest after the group, in seconds).
+- When writing a plan from dictation, ask for what the user did not give (weights, rest times, which exercises are paired). Never invent weights. You may propose rep ranges and progression steps, but say they are your proposal.
+- Fill the `PROFIL` constant from the conversation: training experience, goal, days per week, health limitations, where the plan comes from. It is sent with every question asked inside the app.
+- Choose the warm-up and cool-down for the body part. Keep them short.
+- An old plan does not have to disappear: give it `archived: true` and it stays visible in the Log and charts, without a tab.
 
-## Wyniki
+## Results
 
-- Zapisują się w bazie strony: kolekcja `sesje`, dokument `RRRR-MM-DD_tN`. Pola: `sets` (per ćwiczenie tablica serii `{kg, reps, done}`), `fb` (oceny: `feel` lekko/ok/ciezko, `pain` lista miejsc), `warm`, `cool`, `notes`, `finished`, `updatedAt`.
-- Czytaj je narzędziem ArtifactData. Gdy użytkownik poprosi o przepisanie treningu, zapisz go w czytelnej formie do pliku dziennika w jego folderze (np. `dziennik.md`) i zaproponuj ciężary na następny raz. Liczby bierz z zapisanych serii, nie z pamięci.
-- Gdy wpisujesz trening za użytkownika (np. zrobił go bez telefonu), utwórz dokument w tym samym kształcie, z `finished: true`.
+- They are saved in the page's database: collection `sesje`, document `YYYY-MM-DD_tN`. Fields: `sets` (per exercise an array of sets `{kg, reps, done}`), `fb` (ratings: `feel` lekko/ok/ciezko, `pain` list of places), `warm`, `cool`, `notes`, `finished`, `updatedAt`.
+- Read them with the ArtifactData tool. When the user asks you to copy a workout into their journal, write it in readable form to a journal file in their folder (e.g. `journal.md` or `dziennik.md`) and propose weights for next time. Take the numbers from the saved sets, never from memory.
+- When you enter a workout on the user's behalf (for example one done without the phone), create a document in the same shape with `finished: true`.
 
-## Zasady
+## Rules
 
-- Słowa użytkownika mają pierwszeństwo. Nazwy ćwiczeń zapisuj tak, jak je nazywa.
-- Przy bólu albo kontuzji radź ostrożnie: lżejszy wariant albo zamiennik, a przy bólu narastającym przerwę i konsultację z fizjoterapeutą lub lekarzem. Nie stawiaj diagnoz.
-- Sekcji z logiką strony (poza `PLAN`, `PROFIL`, `SOON`, `TABS`) nie zmieniaj bez wyraźnej prośby. Jeśli zmieniasz, sprawdź składnię (`node --check` na wyciętym skrypcie) i opublikuj ponownie.
-- Nie dodawaj zewnętrznych skryptów ani usług. Strona ma zostać jednym plikiem.
+- The user's words come first. Write exercise names the way the user names them.
+- With pain or injury advise carefully: a lighter variant or a substitute, and for pain that gets worse a pause and a physiotherapist or doctor. Do not diagnose.
+- Do not change the page logic (anything outside `PLAN`, `PROFIL`, `SOON`, `TABS`) unless the user explicitly asks. If you do, check the syntax (`node --check` on the extracted script) and publish again.
+- Add no external scripts or services. The page stays a single file.
