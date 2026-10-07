@@ -1,4 +1,6 @@
-# Moja siłownia
+# My gym (Moja siłownia)
+
+[English](README.md)
 
 Prosta appka treningowa na telefon. Pamięta plan, odlicza przerwy między seriami, zapisuje wyniki i podpowiada, ile nałożyć następnym razem. Jeden plik. Sama appka jest mechaniczna, a myśli za nią Claude: to on wpisuje Twój plan, czyta Twój dziennik i odpowiada na pytania o ciężary.
 
@@ -22,11 +24,11 @@ Powstała jako prywatne narzędzie jednego ćwiczącego, który po latach z tren
 
 ## Instalacja w pięć kroków
 
-1. **Pobierz plik `moja-silownia.html`.** Na tej stronie kliknij zielony przycisk „Code”, potem „Download ZIP”, i rozpakuj. Zapisz plik w osobnym folderze, na przykład `Dokumenty/silownia`.
+1. **Pobierz plik `my-gym.html`.** Na tej stronie kliknij zielony przycisk „Code”, potem „Download ZIP”, i rozpakuj. Zapisz plik w osobnym folderze, na przykład `Dokumenty/silownia`.
 2. **Otwórz aplikację Claude na komputerze**, przejdź do zakładki Code i wskaż ten folder jako projekt.
 3. **Wklej Claude'owi to zdanie:**
 
-   > Opublikuj plik moja-silownia.html jako moją prywatną stronę, z bazą danych i z możliwością pytania Claude'a. Potem zapytaj mnie o mój plan treningów i wpisz go do pliku.
+   > Opublikuj plik my-gym.html jako moją prywatną stronę, z bazą danych i z możliwością pytania Claude'a. Potem zapytaj mnie o mój plan treningów i wpisz go do pliku.
 
 4. **Claude zwróci link do Twojej strony.** Otwórz go w telefonie, zalogowany na to samo konto Claude. W Safari wybierz „Udostępnij”, potem „Do ekranu początkowego”, żeby mieć ikonę jak w zwykłej aplikacji.
 5. **Podyktuj Claude'owi plan:** ćwiczenia, serie, powtórzenia, ciężary, przerwy, które ćwiczenia idą w parach. Claude wpisze plan i opublikuje stronę jeszcze raz pod tym samym adresem.
@@ -60,7 +62,7 @@ Gdy pojawi się nowa wersja pliku, pobierz ją i powiedz Claude'owi: „zaktuali
 
 ## Jak to zmieniać
 
-To jeden plik HTML. Wszystko, co dotyczy Twojego planu, zmienia Claude na Twoją prośbę. Jeśli chcesz zmienić coś więcej, na przykład długość przerw, wygląd albo zasadę dokładania ciężaru, też powiedz to Claude'owi. Instrukcja dla niego jest w pliku `CLAUDE.md`.
+To jeden plik HTML. Wszystko, co dotyczy Twojego planu, zmienia Claude na Twoją prośbę. Jeśli chcesz zmienić coś więcej, na przykład długość przerw, wygląd albo zasadę dokładania ciężaru, też powiedz to Claude'owi. Instrukcja dla niego jest w pliku `CLAUDE.md` (po angielsku, Claude czyta oba języki).
 
 ## Autor i licencja
 

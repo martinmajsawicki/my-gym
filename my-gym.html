@@ -1,21 +1,21 @@
 <!--
-  MOJA SIŁOWNIA: prosta appka treningowa, nakładka na Claude'a. Jeden plik.
-  Działa jako prywatna strona opublikowana z Claude Code (aplikacja Claude na komputerze, zakładka Code).
+  MY GYM (Moja siłownia): a simple workout app, a thin layer over Claude. One file.
+  It runs as a private page published from Claude Code (Claude desktop app, Code tab).
+  Full instructions for Claude: CLAUDE.md. For people: README.md (English) and README.pl.md (Polish).
 
-  Instrukcja dla Claude'a, który publikuje to dla użytkownika:
-  1. Opublikuj ten plik narzędziem Artifact z capabilities {"db": {}, "sample": {}}. Bez tych dwóch
-     uprawnień nie zadziała zapis wyników ani przycisk „Zapytaj Claude'a”.
-  2. Plan treningów jest w obiekcie PLAN (sekcja „CZYSTE START”). Jeden trening = jeden obiekt (t1, t3, ...).
-     Grupa w „supersets” z jednym ćwiczeniem to zwykłe serie; z dwoma to superseria (przerwa dopiero po parze).
-     Pola ćwiczenia: id, name, short, sets, kg (ciężar wyjściowy, null gdy nieznany), lo i hi (zakres powtórzeń),
-     step (krok progresji; null gdy „+1 płytka”), unit ("szt." dla maszyn z odciążeniem, wtedy assist: true,
-     a step ujemny), perHand (ciężar na rękę), perSide (powtórzenia na stronę), bar (rysuje talerze na gryf 20 kg).
-  3. Zakładki buduje tablica TABS; trening bez wpisu w PLAN pokazuje zaślepkę z SOON.
-  4. Wyniki zapisują się w bazie strony: kolekcja „sesje”, dokument „RRRR-MM-DD_tN”
-     (pola: sets, fb, warm, cool, notes, finished). Czytaj je narzędziem ArtifactData i przepisuj
-     do dziennika użytkownika, gdy o to poprosi.
-  5. Profil użytkownika do podpowiedzi jest w stałej PROFIL. Uzupełnij go z rozmowy, zanim użytkownik zacznie pytać.
-  Pełna instrukcja: CLAUDE.md i README.md w repozytorium.
+  Short version for the Claude that publishes this for the user:
+  1. Publish this file with the Artifact tool and capabilities {"db": {}, "sample": {}}. Without them
+     results will not be saved and the "Zapytaj Claude'a" (Ask Claude) button will not work.
+  2. The workout plan is the PLAN object (section "CZYSTE START"). One workout = one object (t1, t3, ...).
+     A group in "supersets" with one exercise is straight sets; with two it is a superset (rest after the pair).
+     Exercise fields: id, name, short, sets, kg (starting weight, null if unknown), lo and hi (rep range),
+     step (progression step; null for "+1 plate"), unit ("szt." for assisted machines, then assist: true and
+     a negative step), perHand (weight per hand), perSide (reps per side), bar (draws plates for a 20 kg bar).
+  3. Tabs come from the TABS array; a workout missing from PLAN shows a placeholder from SOON.
+  4. Results are saved in the page database: collection "sesje", document "YYYY-MM-DD_tN"
+     (fields: sets, fb, warm, cool, notes, finished). Read them with ArtifactData and copy them
+     into the user's journal when asked.
+  5. The user profile for suggestions is the PROFIL constant. Fill it from the conversation first.
 -->
 <title>Moja siłownia</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
