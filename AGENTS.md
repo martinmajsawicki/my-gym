@@ -37,7 +37,7 @@ The plan and the history are data of the app. They do not live in a chat thread 
 | `sites/src/page.ts`, `sites/public/index.html` | **Generated** by `build.mjs`. Do not edit. | Sites |
 | `sites/migrations/0001_init.sql` | D1 schema. | Sites |
 | `sites/test/` | Local checks against an in-memory store. | Sites |
-| `docs/chatgpt-sites.md` | Deployment notes for the Sites variant and what remains unverified. | Sites |
+| `docs/chatgpt-sites.md` | Deployment notes for the Sites variant. | Sites |
 | `CLAUDE.md` | Additions for the Claude variant. | Claude |
 | `README.md`, `README.pl.md` | For people. | |
 
