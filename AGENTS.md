@@ -135,4 +135,4 @@ node build.mjs --check    # are the generated files up to date?
 cd sites && npm install && npm run check   # build check, tsc --noEmit, node --test (in-memory store, no D1)
 ```
 
-The tests run on Node 24 (it strips TypeScript types itself). They prove the routes, validation, isolation between users and the MCP protocol handling. They do not prove anything about the Sites platform; see `docs/chatgpt-sites.md`.
+The tests run on Node 24 (it strips TypeScript types itself) and cover the routes, validation, isolation between users and the MCP protocol handling.

@@ -6,7 +6,7 @@ Prosta appka treningowa na telefon. Pamięta plan, odlicza przerwy między seria
 
 Powstała jako prywatne narzędzie jednego ćwiczącego, który po latach z trenerem zaczął trenować sam. Technikę znał, brakowało mu planu pod ręką, stopera i dziennika.
 
-Działa w dwóch miejscach. Jako prywatna strona na Twoim koncie Claude: ta wersja istnieje i jest używana. Albo jako prywatna strona ChatGPT Sites z własną bazą i narzędziami dla ChatGPT: ta wersja jest przygotowana w repozytorium i czeka na pierwsze wdrożenie (opis w części [Wersja na ChatGPT Sites](#wersja-na-chatgpt-sites)).
+Działa w dwóch miejscach: jako prywatna strona na Twoim koncie Claude albo jako prywatna strona ChatGPT Sites z własną bazą i narzędziami dla ChatGPT (opis w części [Wersja na ChatGPT Sites](#wersja-na-chatgpt-sites)).
 
 ## Dla kogo
 
@@ -39,7 +39,7 @@ Plik zawiera dwa przykładowe treningi (klatka z bicepsem, nogi) bez ciężarów
 
 W folderze `sites/` jest ta sama appka dla ChatGPT Sites: strona, mały backend z bazą (Cloudflare Worker i D1) oraz narzędzia, którymi ChatGPT czyta Twój dziennik i zmienia plan albo cele na następny raz. Sam trening odbywa się na stronie, bez czatu. W stronie nie ma przycisku „Zapytaj ChatGPT”: pytasz w ChatGPT, a on sięga do Twoich danych przez narzędzia.
 
-Instalujesz ją tak samo: otwierasz folder w ChatGPT Work albo w Codex i piszesz jedno zdanie. Agent wdraża stronę, daje Ci link i proponuje plugin strony, dzięki któremu ChatGPT czyta Twój dziennik i zmienia plan. Notatki dla agenta, także o tym, czego nikt jeszcze nie sprawdził, są w [docs/chatgpt-sites.md](docs/chatgpt-sites.md). Stan: przygotowane w repozytorium, testy lokalne przechodzą, czeka na pierwsze wdrożenie.
+Instalujesz ją tak samo: otwierasz folder w ChatGPT Work albo w Codex i piszesz jedno zdanie. Agent wdraża stronę, daje Ci link i proponuje plugin strony, dzięki któremu ChatGPT czyta Twój dziennik i zmienia plan. Notatki dla agenta są w [docs/chatgpt-sites.md](docs/chatgpt-sites.md).
 
 ## Jak używać na co dzień
 

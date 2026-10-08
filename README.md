@@ -6,7 +6,7 @@ A simple workout app for your phone. It remembers your plan, times the rest betw
 
 It started as a private tool of one lifter who, after years with a coach, began training alone. He knew the technique. What he lacked was the plan at hand, a stopwatch and a log.
 
-It runs in two places. As a private page on your Claude account: this is the version that exists and is in use. Or as a private ChatGPT Site with its own database and tools for ChatGPT: this version is prepared in the repository and waits for its first deployment (see [ChatGPT Sites version](#chatgpt-sites-version)).
+It runs in two places: as a private page on your Claude account, or as a private ChatGPT Site with its own database and tools for ChatGPT (see [ChatGPT Sites version](#chatgpt-sites-version)).
 
 ## Who it is for
 
@@ -39,7 +39,7 @@ The file ships with two example workouts (chest and biceps, legs) without weight
 
 The folder `sites/` holds the same app for ChatGPT Sites: the page, a small backend with a database (Cloudflare Worker and D1) and tools that ChatGPT uses to read your log and to change your plan or the targets for next time. The workout itself happens on the page, without a chat. There is no "Ask ChatGPT" button inside the page: you ask in ChatGPT, which reaches your data through the tools.
 
-Install it the same way: open the folder in ChatGPT Work or Codex and write one sentence. The agent deploys the Site, gives you the link, and offers the Site's plugin so that ChatGPT can read your log and change your plan. The notes for the agent, including what nobody has verified yet, are in [docs/chatgpt-sites.md](docs/chatgpt-sites.md). Status: prepared in the repository, local checks pass, waiting for its first deployment.
+Install it the same way: open the folder in ChatGPT Work or Codex and write one sentence. The agent deploys the Site, gives you the link, and offers the Site's plugin so that ChatGPT can read your log and change your plan. The notes for the agent are in [docs/chatgpt-sites.md](docs/chatgpt-sites.md).
 
 ## Everyday use
 
